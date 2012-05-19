@@ -1,0 +1,22 @@
+{
+  "author": "Dmitri Ischenko <ischenkodv@gmail.com>",
+  "name": "verkkomaksut",
+  "description": "Suomen Verkkomaksut payment interface",
+  "version": "0.0.0",
+  "repository": {
+    "url": ""
+  },
+  "dependencies": {
+    "async": "0.1.18"
+  },
+  "devDependencies": {
+      "mocha": "~1.0",
+      "chai" : "~0.5",
+      "sinon": "~1.3"
+  },
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  },
+  "license": "MIT"
+}

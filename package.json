@@ -2,7 +2,7 @@
   "author": "Dmitri Ischenko <ischenkodv@gmail.com>",
   "name": "verkkomaksut",
   "description": "Suomen Verkkomaksut payment interface",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "repository": {
     "url": "git://github.com/ischenkodv/verkkomaksut.git"
   },

@@ -5,12 +5,18 @@ describe("Verkkomaksut", function () {
 
     var verkkomaksut;
 
+
     beforeEach(function(done){
         verkkomaksut = require('../index');
         done();
     });
 
+    afterEach(function(done){
+        done();
+    });
+
     it("should be able to create Urlset", function(){
+
         var Urlset = new verkkomaksut.Urlset(
             'http://example.com/success',
             'http://example.com/failure',
@@ -74,9 +80,40 @@ describe("Verkkomaksut", function () {
         });
     });
 
-    /*it("should know its version", function () {
-        var verkkomaksut = require('../index');
-        expect(verkkomaksut.version).to.not.equal(undefined);
-        expect(verkkomaksut.version).to.equal('0.0.0');
-    });*/
+
+    it("can handle error response with wrong credentials", function(done){
+
+        // An object is created to model all payment return addresses.
+        var urlset = new verkkomaksut.Urlset(
+            "https://example.com/sv/success",
+            "https://example.com/sv/failure",
+            "https://example.com/sv/notify",
+            "https://example.com/sv/pending"
+        );
+
+        // An object is created to model payer’s data
+        var contact = new verkkomaksut.Contact(
+            "Test",                             // first name
+            "Person",                           // surname
+            "test.person@democompany.com",      // email address
+            "Test street 1",                    // street address
+            "12340",                            // postal code
+            "Helsinki",                         // post office
+            "FI",                               // maa (ISO-3166)
+            "040123456",                        // telephone number
+            "",                                 // mobile phone number
+            "Demo Company Ltd"                  // company name
+        );
+
+        var orderNumber = 1;
+        var payment = new verkkomaksut.PaymentE1(orderNumber, urlset, contact);
+
+        var module = new verkkomaksut.Rest(1346613241324143, "asdfasfqrfadf6pKF4jkv97zmqBJ3ZL8gUw5DfT2NMQ");
+        module.processPayment(payment, function(err, res){
+            expect(err.message).to.equal('You have failed to provide valid integration id and/or secret with basic authentication');
+            expect(err.code).to.equal('authentication-failed');
+            done();
+        });
+    });
+
 });

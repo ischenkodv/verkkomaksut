@@ -31,7 +31,6 @@ describe("Verkkomaksut", function () {
 
 
     /*beforeEach(function(done){
-        verkkomaksut = require('../index');
         done();
     });*/
 
@@ -181,6 +180,36 @@ describe("Verkkomaksut", function () {
             expect(err.code).to.equal('invalid-contact-first-name');
             done();
         });
+    });
+
+    it("confirm payment using hash", function(done){
+        var module = new verkkomaksut.Rest(13466, "6pKF4jkv97zmqBJ3ZL8gUw5DfT2NMQ");
+
+        var resp = {
+            ORDER_NUMBER: '4fbab82c744f026a14000001',
+            TIMESTAMP: '1337636938',
+            PAID: '8fc0572381',
+            METHOD: '1',
+            RETURN_AUTHCODE: '5C9A6694A323ADB71EABCDC0DE066DAC'
+        }
+
+        expect(module.confirmPayment(resp.ORDER_NUMBER, resp.TIMESTAMP, resp.PAID, resp.METHOD, resp.RETURN_AUTHCODE)).to.equal(true);
+        done();
+    });
+
+    it("rejects payment with wrong hash", function(done){
+        var module = new verkkomaksut.Rest(13466, "6pKF4jkv97zmqBJ3ZL8gUw5DfT2NMQ");
+
+        var resp = {
+            ORDER_NUMBER: '4fbab82c744f026a14000001',
+            TIMESTAMP: '1337636938',
+            PAID: '8fc0572381',
+            METHOD: '1',
+            RETURN_AUTHCODE: 'WRONG_HASH_3ADB71EABCDC0DE066DAC'
+        }
+
+        expect(module.confirmPayment(resp.ORDER_NUMBER, resp.TIMESTAMP, resp.PAID, resp.METHOD, resp.RETURN_AUTHCODE)).to.equal(false);
+        done();
     });
 
 

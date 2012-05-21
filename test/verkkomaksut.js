@@ -3,45 +3,19 @@ var expect = require('chai').expect;
 
 describe("Verkkomaksut", function () {
 
-    var verkkomaksut;
+    var verkkomaksut = require('../index');
 
-
-    beforeEach(function(done){
-        verkkomaksut = require('../index');
-        done();
-    });
-
-    afterEach(function(done){
-        done();
-    });
-
-    it("should be able to create Urlset", function(){
-
-        var Urlset = new verkkomaksut.Urlset(
+    var createUrlset = function(){
+        return new verkkomaksut.Urlset(
             'http://example.com/success',
             'http://example.com/failure',
             'http://example.com/notify',
             'http://example.com/pending'
-        )
-
-        expect(Urlset.successUrl).to.equal('http://example.com/success');
-        expect(Urlset.failureUrl).to.equal('http://example.com/failure');
-        expect(Urlset.notificationUrl).to.equal('http://example.com/notify');
-        expect(Urlset.pendingUrl).to.equal('http://example.com/pending');
-    });
-
-    it("can make request to gateway", function(done){
-
-        // An object is created to model all payment return addresses.
-        var urlset = new verkkomaksut.Urlset(
-            "https://example.com/sv/success",
-            "https://example.com/sv/failure",
-            "https://example.com/sv/notify",
-            "https://example.com/sv/pending"
         );
+    }
 
-        // An object is created to model payer’s data
-        var contact = new verkkomaksut.Contact(
+    var createContact = function(){
+        return new verkkomaksut.Contact(
             "Test",                             // first name
             "Person",                           // surname
             "test.person@democompany.com",      // email address
@@ -52,7 +26,38 @@ describe("Verkkomaksut", function () {
             "040123456",                        // telephone number
             "",                                 // mobile phone number
             "Demo Company Ltd"                  // company name
-        );
+        )
+    }
+
+
+    /*beforeEach(function(done){
+        verkkomaksut = require('../index');
+        done();
+    });*/
+
+    /*afterEach(function(done){
+        done();
+    });*/
+
+    it("should be able to create Urlset", function(){
+
+        var urlset = new verkkomaksut.Urlset(
+            'http://example.com/success',
+            'http://example.com/failure',
+            'http://example.com/notify',
+            'http://example.com/pending'
+        )
+
+        expect(urlset.successUrl).to.equal('http://example.com/success');
+        expect(urlset.failureUrl).to.equal('http://example.com/failure');
+        expect(urlset.notificationUrl).to.equal('http://example.com/notify');
+        expect(urlset.pendingUrl).to.equal('http://example.com/pending');
+    });
+
+    it("can make request to gateway", function(done){
+
+        var urlset = createUrlset();
+        var contact = createContact();
 
         // Payment creation
         var orderNumber = "1";                     // Use distinguished order number
@@ -71,6 +76,7 @@ describe("Verkkomaksut", function () {
 
         payment.setLocale("en_US");
 
+
         // Sending payment to Suomen Verkkomaksut service and handling possible errors
         var module = new verkkomaksut.Rest(13466, "6pKF4jkv97zmqBJ3ZL8gUw5DfT2NMQ");
         module.processPayment(payment, function(err, res){
@@ -78,6 +84,7 @@ describe("Verkkomaksut", function () {
             expect(res.url.substring(0, 51)).to.equal('https://payment.verkkomaksut.fi/payment/load/token/');
             done();
         });
+
     });
 
 
@@ -115,5 +122,66 @@ describe("Verkkomaksut", function () {
             done();
         });
     });
+
+
+    it("returns error if contact's last name not defined", function(done){
+
+        var urlset = createUrlset();
+
+        var contact = new verkkomaksut.Contact(
+            "Test",                             // first name
+            "",                                 // surname
+            "test.person@democompany.com",      // email address
+            "Test street 1",                    // street address
+            "12340",                            // postal code
+            "Helsinki",                         // post office
+            "FI",                               // maa (ISO-3166)
+            "040123456",                        // telephone number
+            "",                                 // mobile phone number
+            "Demo Company Ltd"                  // company name
+        );
+
+        var orderNumber = 1;
+        var payment = new verkkomaksut.PaymentE1(orderNumber, urlset, contact);
+
+        var module = new verkkomaksut.Rest(13466, "6pKF4jkv97zmqBJ3ZL8gUw5DfT2NMQ");
+        module.processPayment(payment, function(err, res){
+            expect(res).to.equal(undefined);
+            expect(err.message).to.equal('Missing or invalid contact last name');
+            expect(err.code).to.equal('invalid-contact-last-name');
+            done();
+        });
+    });
+
+
+    it("returns error if contact's first name not defined", function(done){
+
+        var urlset = createUrlset();
+
+        var contact = new verkkomaksut.Contact(
+            "",                                 // first name
+            "Last",                             // surname
+            "test.person@democompany.com",      // email address
+            "Test street 1",                    // street address
+            "12340",                            // postal code
+            "Helsinki",                         // post office
+            "FI",                               // maa (ISO-3166)
+            "040123456",                        // telephone number
+            "",                                 // mobile phone number
+            "Demo Company Ltd"                  // company name
+        );
+
+        var orderNumber = 1;
+        var payment = new verkkomaksut.PaymentE1(orderNumber, urlset, contact);
+
+        var module = new verkkomaksut.Rest(13466, "6pKF4jkv97zmqBJ3ZL8gUw5DfT2NMQ");
+        module.processPayment(payment, function(err, res){
+            expect(res).to.equal(undefined);
+            expect(err.message).to.equal('Missing or invalid contact first name');
+            expect(err.code).to.equal('invalid-contact-first-name');
+            done();
+        });
+    });
+
 
 });

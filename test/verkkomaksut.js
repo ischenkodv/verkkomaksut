@@ -86,6 +86,40 @@ describe("Verkkomaksut", function () {
 
     });
 
+    it("request body can have utf8 characters", function(done){
+
+        var urlset = createUrlset();
+        var contact = createContact();
+
+        // Payment creation
+        var orderNumber = "1";                     // Use distinguished order number
+        var payment = new verkkomaksut.PaymentE1(orderNumber, urlset, contact);
+
+        // Adding one or more product rows to the payment
+        payment.addProduct(
+            "Veriryhmämääritykset",             // product title
+            "01234",                            // product code
+            "1.00",                             // product quantity
+            "19.90",                            // product price (/apiece)
+            "23.00",                            // Tax percentage
+            "0.00",                             // Discount percentage
+            verkkomaksut.Product.TYPE_NORMAL	// Product type			
+        );
+
+        payment.setLocale("fi_FI");
+
+
+        // Sending payment to Suomen Verkkomaksut service and handling possible errors
+        var module = new verkkomaksut.Rest(13466, "6pKF4jkv97zmqBJ3ZL8gUw5DfT2NMQ");
+        module.processPayment(payment, function(err, res){
+            expect(err === null).to.equal(true);
+            expect(res.token).to.be.a('string');
+            expect(res.url.substring(0, 51)).to.equal('https://payment.verkkomaksut.fi/payment/load/token/');
+            done();
+        });
+
+    });
+
 
     it("can handle error response with wrong credentials", function(done){
 

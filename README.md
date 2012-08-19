@@ -1,10 +1,17 @@
-Suomen Verkkomaksut payment interface.
-======================================
+# Suomen Verkkomaksut payment interface.
+
+This is NodeJS version of interface (not official).
 
 Suomen Verkkomaksut payment interface allows for creating payment with a server request. With the REST interface, the payment is created in advance by sending payment data as a JSON message using HTTP over SSL (HTTPS) protocol. Service returns the response message in a corresponding format.
 
 More information can be found here: [Suomen Verkkomaksut - Integration guide](http://docs.verkkomaksut.fi/en/index-all.html)
 
+## Install
+```
+npm install verkkomaksut
+```
+
+## Example
 ```javascript
 var service = require('verkkomaksut');
 

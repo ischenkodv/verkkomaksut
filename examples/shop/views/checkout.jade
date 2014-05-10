@@ -1,0 +1,40 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(content='width=device-width, initial-scale=1.0', name='viewport')
+    title= Shop
+    // Le styles
+    link(href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css', rel='stylesheet')
+
+  body
+    .container
+      .row
+        table.table
+          thead
+            tr
+              th Product
+              th Quantity
+              th Price
+          tbody
+            tr
+              td Laptop
+              td 1
+              td 1000 EUR
+            tr
+              td Shipping
+              td &nbsp;
+              td 10 EUR
+          tfoot
+            tr
+              td(style="font-weight:bold") Total
+              td(style="font-weight:bold") &nbsp;
+              td(style="font-weight:bold") 1010 EUR
+
+        form(style="text-align:right", action="", method="POST")
+          input(type="hidden", name="product[name]", value="Laptop")
+          input(type="hidden", name="product[quantity]", value="1")
+          input(type="hidden", name="product[price]", value="1000")
+          input(type="hidden", name="shipping_price", value="10")
+          p You will be redirected to the test account to make fake payment.
+          button.button(type="submit") Continue

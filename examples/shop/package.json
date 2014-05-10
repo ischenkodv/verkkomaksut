@@ -1,0 +1,10 @@
+{
+    "name": "verkkomaksut-example",
+    "main": "server.js",
+    "dependencies": {
+        "express": "4.1.2",
+        "body-parser": "1.0.1",
+        "jade": "1.3.1",
+        "verkkomaksut": "0.0.4"
+    }
+}

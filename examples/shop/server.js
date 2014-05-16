@@ -2,21 +2,28 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var config = require('./config/payment');
-//var mongoose = require('mongoose');
-//var Bear = require('./app/models/bear');
+var verkkomaksut = require('verkkomaksut');
 
-//mongoose.connect('mongodb://root:password@novus.modulusmongo.net:27017/Poniw5iw');
+var log4js = require('log4js');
+log4js.configure({
+    appenders: [
+        {
+            type         : "file",
+            absolute     : true,
+            filename     : __dirname + "/logs/messages.log",
+            maxLogSize   : 20480,
+            backups      : 10,
+            category     : "debug"
+        }
+    ]
+});
+var logger = log4js.getLogger('debug');
 
 app.use(bodyParser());
 
 var port = process.env.PORT || 3001;
 
 var router = express.Router();
-
-// Middleware to use for all requests.
-/*router.use(function(req, res, next) {
-    next(); // go to the next route.
-});*/
 
 router.get('/', function(req, res) {
     res.json({ message: 'welcome' });
@@ -42,13 +49,12 @@ post(function(req, res, next) {
         }
     };
 
-    var verkkomaksut = require('verkkomaksut');
 
     var urlset = new verkkomaksut.Urlset(
-        config.host + "/payment/success",
-        config.host + "/payment/failure",
-        config.host + "/payment/notify",
-        config.host + "/payment/pending"
+        config.host + "/checkout/success",
+        config.host + "/checkout/failure",
+        config.host + "/checkout/notify",
+        config.host + "/checkout/pending"
     );
 
     var countryCode = "FI";
@@ -114,65 +120,45 @@ post(function(req, res, next) {
 
 });
 
-router.route('/bears')
-    .post(function(req, res) {
-        var bear = new Bear();
-        bear.name = req.body.name;
+function confirmPayment(query) {
+    var rest = new verkkomaksut.Rest(config.merchantId, config.merchantSecret);
 
-        console.log('Got POST');
-        bear.save(function(err) {
-            if (err) res.send(err);
+    return rest.confirmPayment(
+        query.ORDER_NUMBER,
+        query.TIMESTAMP,
+        query.PAID,
+        query.METHOD,
+        query.RETURN_AUTHCODE
+    );
+}
 
-            console.log(arguments);
-            res.json({ message: 'Bear created!' });
+router.get('/checkout/success', function(req, res) {
+    if (confirmPayment(req.query)) {
+        res.render('checkout_result.jade', {
+            result: 'success'
         });
-    })
-    .get(function(req, res) {
-        Bear.find(function(err, bears) {
-            if (err) res.send(err);
-
-            res.json(bears);
+    } else {
+        res.render('checkout_result.jade', {
+            result: 'error'
         });
+    }
+});
+
+router.get('/checkout/notify', function(req, res) {
+    if (confirmPayment(req.query)) {
+        logger.info('Payment completed successfully');
+    } else {
+        logger.error('Payment failed');
+    }
+});
+
+router.get('/checkout/failure', function(req, res) {
+    console.log(req.query, req.body);
+    res.render('checkout_result.jade', {
+        result: 'cancel'
     });
+});
 
-router.route('/bears/:bear_id')
-    .get(function(req, res) {
-        Bear.findById(req.params.bear_id, function(err, bear) {
-            if (err) res.send(err);
-
-            res.json(bear);
-        });
-    })
-    .put(function(req, res) {
-
-        // use our bear model to find the bear we want
-        Bear.findById(req.params.bear_id, function(err, bear) {
-
-            if (err)
-                res.send(err);
-
-            bear.name = req.body.name;  // update the bears info
-
-            // save the bear
-            bear.save(function(err) {
-                if (err)
-                    res.send(err);
-
-                res.json({ message: 'Bear updated!' });
-            });
-
-        });
-    })
-    .delete(function(req, res) {
-        Bear.remove({
-            _id: req.params.bear_id
-        }, function(err, bear) {
-            if (err)
-                res.send(err);
-
-            res.json({ message: 'Successfully deleted' });
-        });
-    });
 
 app.use('/', router);
 

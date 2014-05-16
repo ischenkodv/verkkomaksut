@@ -1,0 +1,41 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(content='width=device-width, initial-scale=1.0', name='viewport')
+    title= Checkout
+    // Le styles
+    link(href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css', rel='stylesheet')
+
+    style.
+      #header {
+        padding: 1em;
+        margin-bottom: 2em;
+        background: #bada55;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+      }
+
+      #header a {
+        text-decoration: none;
+        color: white;
+      }
+
+      .success {color: green; text-align: center}
+      .failure {color: red; text-align: center}
+
+      tfoot tr {font-weight: bold}
+
+  body
+    .container
+      #header.row
+        h2
+          a(href="/checkout") Shopping cart
+      .row
+        .result
+          if result == "success"
+            p.success Payment completed successfully.
+          else if result == "failure"
+            p.failure Payment failed
+          else if result == "cancel"
+            p.failure Payment cancelled

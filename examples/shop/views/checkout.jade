@@ -7,8 +7,28 @@ html
     // Le styles
     link(href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css', rel='stylesheet')
 
+    style.
+      #header {
+        padding: 1em;
+        margin-bottom: 2em;
+        color: white;
+        background: #bada55;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+      }
+
+      #header a {
+        text-decoration: none;
+        color: white;
+      }
+
+      tfoot tr {font-weight: bold}
+
   body
     .container
+      #header.row
+        h2
+          a(href="/checkout") Shopping cart
       .row
         table.table
           thead
@@ -27,9 +47,9 @@ html
               td 10 EUR
           tfoot
             tr
-              td(style="font-weight:bold") Total
-              td(style="font-weight:bold") &nbsp;
-              td(style="font-weight:bold") 1010 EUR
+              td Total
+              td &nbsp;
+              td 1010 EUR
 
         form(style="text-align:right", action="", method="POST")
           input(type="hidden", name="product[name]", value="Laptop")

@@ -1,1 +1,1 @@
-Tutorial: http://scotch.io/tutorials/javascript/build-a-restful-api-using-node-and-express-4
+Example of application that makes payment using shopping cart.

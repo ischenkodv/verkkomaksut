@@ -101,7 +101,6 @@ post(function(req, res, next) {
     // Sending payment to Suomen Verkkomaksut service and handling possible errors
     var rest = new verkkomaksut.Rest(config.merchantId, config.merchantSecret);
     rest.processPayment(payment, function(err, data) {
-        console.log(data, err);
 
         if (data && data.url) {
             res.writeHead(302, {
@@ -146,6 +145,12 @@ router.get('/checkout/success', function(req, res) {
 
 router.get('/checkout/notify', function(req, res) {
     if (confirmPayment(req.query)) {
+        var aQuery = [], i;
+        for (i in req.query) {
+            aQuery.push(i + ': ' + req.query[i]);
+        }
+
+        logger.info('Request data: ' + aQuery.join(', '));
         logger.info('Payment completed successfully');
     } else {
         logger.error('Payment failed');
@@ -153,7 +158,6 @@ router.get('/checkout/notify', function(req, res) {
 });
 
 router.get('/checkout/failure', function(req, res) {
-    console.log(req.query, req.body);
     res.render('checkout_result.jade', {
         result: 'cancel'
     });
